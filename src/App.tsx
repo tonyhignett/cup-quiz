@@ -1,26 +1,38 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import { createBrowserRouter, json, RouterProvider } from "react-router-dom";
+import "./App.css";
+import { Home } from "./pages/Home";
+import { Activity } from "./pages/Activity";
+import { APIResponse } from "./lib/schema";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Home />,
+    loader: async () => {
+      return await fetch(
+        "https://s3.eu-west-2.amazonaws.com/tonyhignett-cup-quiz/api/payload.json",
+      );
+    },
+  },
+  {
+    path: "/activity/:order",
+    element: <Activity />,
+    loader: async ({ params }) => {
+      // Pretend that we only fetched the specific activity from the API.
+      const response = await fetch(
+        "https://s3.eu-west-2.amazonaws.com/tonyhignett-cup-quiz/api/payload.json",
+      );
+      const body = await response.json();
+      return json(
+        (body as APIResponse).activities.find(
+          (activity) => activity.order === parseInt(params.order!),
+        ),
+      );
+    },
+  },
+]);
+
+export function App() {
+  return <RouterProvider router={router} />;
 }
-
-export default App;
