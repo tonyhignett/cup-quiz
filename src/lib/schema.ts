@@ -1,5 +1,6 @@
 export type APIRound = {
   round_title: string;
+  questions: APIQuestion[];
 };
 
 export type APIQuestion = {
