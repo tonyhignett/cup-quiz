@@ -7,19 +7,22 @@ import {
   isSimpleActivity,
 } from "../lib/schema";
 import { useState } from "react";
+import Markdown from "react-markdown";
 
 function RoundResults({ results }: { results: boolean[] }) {
   return (
-    <div>
+    <>
       {results.map((result, index) => {
         return (
-          <div key={index}>
-            <div>Q{index + 1}</div>
-            <div>{result ? "Correct" : "Incorrect"}</div>
+          <div className={"result border"} key={index}>
+            <div className={"text-left"}>Q{index + 1}</div>
+            <div className={"text-right"}>
+              {result ? "Correct" : "Incorrect"}
+            </div>
           </div>
         );
       })}
-    </div>
+    </>
   );
 }
 
@@ -32,10 +35,20 @@ function Question({
 }) {
   return (
     <>
-      <p>{data.stimulus}</p>
-      <div>
-        <button onClick={() => onUserResponse(data.is_correct)}>Correct</button>
-        <button onClick={() => onUserResponse(!data.is_correct)}>
+      <div className={"text-left border"}>
+        <Markdown>{data.stimulus}</Markdown>
+      </div>
+      <div className={"answer-buttons"}>
+        <button
+          className={"answer-button"}
+          onClick={() => onUserResponse(data.is_correct)}
+        >
+          Correct
+        </button>
+        <button
+          className={"answer-button"}
+          onClick={() => onUserResponse(!data.is_correct)}
+        >
           Incorrect
         </button>
       </div>
@@ -56,6 +69,7 @@ function Round({
   function onUserResponse(userAnsweredCorrectly: boolean) {
     if (questionIndex === questions.length - 1) {
       setQuestionIndex(0);
+      setResults([]);
       onComplete([...results, userAnsweredCorrectly]);
     } else {
       setQuestionIndex((prevIndex) => prevIndex + 1);
@@ -65,7 +79,7 @@ function Round({
 
   return (
     <>
-      <p>Q{questionIndex + 1}.</p>
+      <div className={"title text-left"}>Q{questionIndex + 1}.</div>
       <Question
         data={questions[questionIndex]}
         onUserResponse={onUserResponse}
@@ -84,16 +98,18 @@ function SimpleActivity({ data }: { data: APISimpleActivity }) {
   if (results.length > 0) {
     return (
       <div>
-        <p>{data.activity_name}</p>
-        <p>Results</p>
+        <div className={"header text-center"}>{data.activity_name}</div>
+        <div className={"title text-center"}>Results</div>
         <RoundResults results={results} />
-        <Link to={"/"}>Home</Link>
+        <div className={"link"}>
+          <Link to={"/"}>Home</Link>
+        </div>
       </div>
     );
   } else {
     return (
       <div>
-        <p>{data.activity_name}</p>
+        <div className={"header text-left"}>{data.activity_name}</div>
         <Round questions={data.questions} onComplete={onComplete} />
       </div>
     );
@@ -112,25 +128,29 @@ function MultiRoundActivity({ data }: { data: APIMultiRoundActivity }) {
   if (roundIndex === data.questions.length) {
     return (
       <div>
-        <p>{data.activity_name}</p>
-        <p>Results</p>
+        <div className={"header text-center"}>{data.activity_name}</div>
+        <div className={"title text-center"}>Results</div>
         {results.map((roundResults, index) => {
           return (
             <>
-              <p>{data.questions[index].round_title}</p>
+              <div className={"round-results-header text-center border"}>
+                {data.questions[index].round_title}
+              </div>
               <RoundResults results={roundResults} />
             </>
           );
         })}
-        <Link to={"/"}>Home</Link>
+        <div className={"link"}>
+          <Link to={"/"}>Home</Link>
+        </div>
       </div>
     );
   } else {
     return (
       <div>
-        <p>
+        <div className={"header text-left"}>
           {data.activity_name} / {data.questions[roundIndex].round_title}
-        </p>
+        </div>
         <Round
           questions={data.questions[roundIndex].questions}
           onComplete={onRoundComplete}

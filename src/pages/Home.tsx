@@ -6,12 +6,14 @@ export function Home() {
 
   return (
     <div>
-      <p>CAE</p>
-      <p>{apiResponse.name}</p>
+      <div className={"header text-center"}>CAE</div>
+      <div className={"title text-center"}>{apiResponse.name}</div>
       {apiResponse.activities.map((activity, index) => (
-        <Link key={index} to={`/activity/${activity.order}`}>
-          {activity.activity_name}
-        </Link>
+        <div className={"link border"}>
+          <Link key={index} to={`/activity/${activity.order}`}>
+            {activity.activity_name}
+          </Link>
+        </div>
       ))}
     </div>
   );
